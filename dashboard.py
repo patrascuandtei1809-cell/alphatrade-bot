@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AlphaTrade Dashboard - Restored Old Layout"""
+"""AlphaTrade Dashboard - Fixed REAL/DEMO Display"""
 
 import json
 import os
@@ -12,9 +12,6 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
 SETTINGS_FILE = "settings.json"
-
-st.set_page_config(page_title="AlphaTrade DEMO", layout="wide", page_icon="🚀")
-st_autorefresh(interval=5000, limit=None, key="refresh")
 
 
 def load_json(path, default):
@@ -36,6 +33,14 @@ def save_json(path, data):
 
 
 settings = load_json(SETTINGS_FILE, {})
+
+is_demo = bool(settings.get("demo_mode", True))
+mode_str = "DEMO" if is_demo else "REAL"
+mode_label = "DEMO MODE 🎮" if is_demo else "REAL BINANCE 🌐"
+
+st.set_page_config(page_title=f"AlphaTrade {mode_str}", layout="wide", page_icon="🚀")
+st_autorefresh(interval=5000, limit=None, key="refresh")
+
 state = load_json(settings.get("state_file", "bot_state.json"), {})
 
 prices_file = settings.get("prices_file", "prices.csv")
@@ -122,6 +127,7 @@ def load_trades():
         )
 
         df["symbol"] = df["symbol"].astype(str).str.strip().str.upper()
+        df["mode"] = df["mode"].astype(str).str.strip().str.upper()
         df["action"] = df["action"].astype(str).str.strip().str.upper()
         df["price"] = pd.to_numeric(df["price"], errors="coerce")
         df["time"] = pd.to_numeric(df["time"], errors="coerce")
@@ -153,7 +159,6 @@ def format_qty(value):
 if not os.path.exists(commands_file):
     save_json(commands_file, [])
 
-
 st.markdown("""
 <style>
 .stApp { background:#020817; color:#f7f8ff; }
@@ -168,13 +173,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-st.title("🚀 AlphaTrade DEMO")
+st.title(f"🚀 AlphaTrade {mode_str}")
 
 auto_status_color = "🟢" if auto_enabled else "🔴"
 st.markdown(
     f"<div class='header-box'><strong>Status:</strong> {auto_status_color} {'AUTO RUNNING' if auto_enabled else 'MANUAL MODE'} | "
-    f"<strong>Demo mode:</strong> no real Binance orders executed. Testnet pricing simulation only.</div>",
+    f"<strong>Mode:</strong> {mode_label}</div>",
     unsafe_allow_html=True,
 )
 
@@ -230,7 +234,6 @@ if sidebar.button("Apply strategy & watchlist"):
 if sidebar.button("Refresh Now"):
     st.rerun()
 
-
 market_summary = state.get("market", {}).get("prices", {})
 portfolio = state.get("portfolio", {})
 cash = float(portfolio.get("cash", start_balance))
@@ -239,15 +242,7 @@ positions = portfolio.get("positions", {})
 selected_price = market_summary.get(selected_symbol)
 
 if selected_price is None:
-    try:
-        r = requests.get(
-            "https://testnet.binance.vision/api/v3/ticker/price",
-            params={"symbol": selected_symbol},
-            timeout=10,
-        )
-        selected_price = float(r.json().get("price", 0.0))
-    except Exception:
-        selected_price = 0.0
+    selected_price = 0.0
 
 equity = cash
 total_qty = 0.0
@@ -266,7 +261,7 @@ for sym, pos in positions.items():
         price = float(market_summary.get(sym, selected_price if sym == selected_symbol else 0))
         value = qty * price
         equity += value
-        
+
         if qty > 0 and entry > 0:
             open_pnl += (price - entry) * qty
     except Exception:
@@ -298,20 +293,6 @@ if not symbol_chart.empty:
     symbol_chart["ema20"] = symbol_chart["price"].ewm(span=20).mean()
     symbol_chart["ema50"] = symbol_chart["price"].ewm(span=50).mean()
 
-    start_time = symbol_chart["date"].min()
-    end_time = symbol_chart["date"].max()
-
-    symbol_actions = actions_df[
-        (actions_df["symbol"] == selected_symbol_clean) &
-        (actions_df["date"] >= start_time) &
-        (actions_df["date"] <= end_time)
-    ].copy()
-
-    symbol_actions = symbol_actions.sort_values("time").tail(80)
-
-    buy_points = symbol_actions[symbol_actions["action"].str.contains("BUY", na=False)]
-    sell_points = symbol_actions[symbol_actions["action"].str.contains("SELL", na=False)]
-
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
@@ -338,26 +319,6 @@ if not symbol_chart.empty:
         line=dict(color="#ffb86b", width=2, dash="dash"),
     ))
 
-    if not buy_points.empty:
-        fig.add_trace(go.Scatter(
-            x=buy_points["date"],
-            y=buy_points["price"],
-            mode="markers",
-            name="BUY",
-            marker=dict(color="#00ff88", size=15, symbol="triangle-up", line=dict(color="#003f24", width=2)),
-            hovertemplate="BUY<br>%{x}<br>Price: %{y:.2f}<extra></extra>",
-        ))
-
-    if not sell_points.empty:
-        fig.add_trace(go.Scatter(
-            x=sell_points["date"],
-            y=sell_points["price"],
-            mode="markers",
-            name="SELL",
-            marker=dict(color="#ff3d7f", size=15, symbol="triangle-down", line=dict(color="#610020", width=2)),
-            hovertemplate="SELL<br>%{x}<br>Price: %{y:.2f}<extra></extra>",
-        ))
-
     fig.update_layout(
         height=520,
         paper_bgcolor="#020817",
@@ -372,7 +333,6 @@ if not symbol_chart.empty:
     fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.12)", tickfont=dict(color="#cbd6ff"))
 
     st.plotly_chart(fig, use_container_width=True)
-
 else:
     st.info("No price history yet for the selected coin.")
 
