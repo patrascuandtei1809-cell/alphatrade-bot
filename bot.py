@@ -17,8 +17,8 @@ settings = None
 # ============================================================================
 
 # Load API credentials from environment variables
-BINANCE_API_KEY = os.environ.get("BINANCE_API_KEY", "")
-BINANCE_API_SECRET = os.environ.get("BINANCE_API_SECRET", "")
+BINANCE_API_KEY = os.getenv("BINANCE_API_KEY", "")
+BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET", "")
 BINANCE_BASE_URL = "https://api.binance.com"
 MAX_TRADE_SIZE_USDT = 10.0  # Safety limit per trade
 
