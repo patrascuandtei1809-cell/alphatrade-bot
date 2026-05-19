@@ -23,7 +23,7 @@
   "actions_file": "actions.csv",
   "status_file": "bot_status.txt",
   "binance": {
-    "use_testnet": true,
+    "use_testnet": false,
     "testnet_base_url": "https://testnet.binance.vision",
     "mainnet_base_url": "https://api.binance.com",
     "api_key": "",
