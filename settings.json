@@ -1,0 +1,88 @@
+{
+  "demo_mode": true,
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "symbol_names": {
+    "BTCUSDT": "Bitcoin",
+    "ETHUSDT": "Ethereum",
+    "SOLUSDT": "Solana"
+  },
+  "default_symbol": "BTCUSDT",
+  "base_currency": "USDT",
+  "start_balance": 1000.0,
+  "trade_size_usdt": 10.0,
+  "refresh_interval": 60,
+  "prices_file": "prices.csv",
+  "trades_file": "trades.csv",
+  "log_file": "bot_log.txt",
+  "state_file": "bot_state.json",
+  "commands_file": "commands.json",
+  "actions_file": "actions.csv",
+  "status_file": "bot_status.txt",
+  "binance": {
+    "use_testnet": true,
+    "testnet_base_url": "https://testnet.binance.vision",
+    "mainnet_base_url": "https://api.binance.com",
+    "api_key": "",
+    "secret_key": ""
+  },
+  "default_strategy": "trend_scalper",
+  "strategies": {
+    "trend_scalper": {
+      "label": "Trend Scalper",
+      "description": "Buy into short uptrends and trail profit when price weakens.",
+      "buy": {
+        "ema_fast": 20,
+        "ema_slow": 50,
+        "rsi_max": 68,
+        "min_bounce_pct": 0.12
+      },
+      "sell": {
+        "profit_target_pct": 0.45,
+        "profit_protect_pct": 0.28,
+        "stop_loss_pct": -0.75,
+        "trailing_drop_pct": -0.25
+      }
+    },
+    "mean_reversion": {
+      "label": "Mean Reversion",
+      "description": "Buy dips on oversold signals and exit when momentum returns.",
+      "buy": {
+        "rsi_threshold": 34,
+        "dip_pct": -0.35
+      },
+      "sell": {
+        "rsi_exit": 62,
+        "profit_target_pct": 0.85,
+        "stop_loss_pct": -1.0
+      }
+    },
+    "breakout": {
+      "label": "Breakout Momentum",
+      "description": "Capture momentum after price breaks above recent resistance.",
+      "buy": {
+        "range_length": 18,
+        "breakout_buffer_pct": 0.22
+      },
+      "sell": {
+        "profit_target_pct": 1.05,
+        "stop_loss_pct": -0.9
+      }
+    }
+  },
+  "strategy": "trend_scalper",
+  "risk": {
+    "max_risk_per_trade_pct": 2.0,
+    "max_total_exposure_pct": 50.0,
+    "max_drawdown_pct": 10.0,
+    "max_consecutive_losses": 3,
+    "volatility_threshold_pct": 3.0,
+    "trade_cooldown_seconds": 180,
+    "min_entry_score": 70,
+    "use_trailing_stop": true,
+    "trailing_stop_pct": 0.25
+  }
+}

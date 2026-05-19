@@ -1,0 +1,62 @@
+{
+  "bot": {
+    "auto_enabled": true,
+    "current_strategy": "trend_scalper",
+    "enabled_symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT"
+    ],
+    "last_run": "2026-05-18T22:12:29.432485"
+  },
+  "portfolio": {
+    "cash": 1275.56,
+    "positions": {
+      "BTCUSDT": {
+        "qty": 0.0,
+        "entry_price": 0.0,
+        "max_price": 0.0,
+        "last_action": "SELL",
+        "last_reason": "TRAILING STOP LOSS -0.38%",
+        "last_buy_time": 1779189873,
+        "manual_locked": false,
+        "entry_signal": "AUTO ENTRY (score:75)"
+      },
+      "ETHUSDT": {
+        "qty": 0.0,
+        "entry_price": 0.0,
+        "max_price": 0.0,
+        "last_action": "SELL",
+        "last_reason": "TRAILING STOP LOSS -0.88%",
+        "last_buy_time": 1779190173,
+        "manual_locked": false,
+        "entry_signal": "AUTO ENTRY (score:70)"
+      },
+      "SOLUSDT": {
+        "qty": 0.3004315,
+        "entry_price": 86.69,
+        "max_price": 86.69,
+        "last_action": "BUY",
+        "last_reason": "AUTO ENTRY (score:70)",
+        "last_buy_time": 1779190173,
+        "manual_locked": false,
+        "entry_signal": "AUTO ENTRY (score:70)"
+      }
+    }
+  },
+  "market": {
+    "prices": {
+      "BTCUSDT": 79680.03,
+      "ETHUSDT": 2175.92,
+      "SOLUSDT": 86.31
+    }
+  },
+  "analytics": {
+    "equity": 1301.490242765,
+    "profit": 301.49024276499995,
+    "max_equity": 1303.1028375305,
+    "max_drawdown": 0.0,
+    "total_trades": 9,
+    "consecutive_losses": 3
+  }
+}
